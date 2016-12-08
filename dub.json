@@ -1,0 +1,23 @@
+{
+  "name": "d-mansay",
+  "authors": [
+    "simdnyan"
+  ],
+  "description": "May D-man bless you.",
+  "copyright": "Copyright © 2016, @smd_nyan",
+  "license": "MIT",
+  "configurations": [
+    {
+      "name": "say",
+      "targetName": "d-mansay",
+      "targetType": "executable",
+      "versions": ["say"]
+    },
+    {
+      "name": "think",
+      "targetName": "d-manthink",
+      "targetType": "executable",
+      "versions": ["think"]
+    }
+  ]
+}
