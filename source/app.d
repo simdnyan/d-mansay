@@ -1,13 +1,17 @@
 import std.stdio,
+       std.conv,
+       std.range,
        std.string,
        std.getopt,
-       std.algorithm.comparison;
+       std.algorithm.comparison,
+       std.algorithm.iteration;
+import eastasianwidth;
 
 const string dman =
 `    t    _   _
      t  (_) (_)
        /______ \
-       \ (e(e \/
+       \\(e(e \/
         | | | |
         | |_| |
        /______/
@@ -16,12 +20,12 @@ const string dman =
 `;
 const string[] eyes = ["=", "X", "$", "@", "*", "-", "O", "."];
 const string[] usage =[
-  `d-man{say,think} version 0.0.1, (c) 2016 @simd_nyan`,
+  `d-man{say,think} version 0.0.2, (c) 2016 @simd_nyan`,
   `Usage: d-man{say,think} [-bdgpstwy] [-h] [-n] [-W wrapcolumn] [message]`
 ];
 version (say)
 {
-  string thought = `\`;
+  const string thought = `\`;
   const string[] baloons = [
     "< ", "< ", "< ",  " >\n",  " >\n", " >\n",
     "/ ", "| ", "\\ ", " \\\n", " |\n", " /\n"
@@ -29,7 +33,7 @@ version (say)
 }
 version(think)
 {
-  string thought = `o`;
+  const string thought = `o`;
   const string[] baloons = [
     "( ", "( ", "( ", " )\n", " )\n", " )\n",
     "( ", "( ", "( ", " )\n", " )\n", " )\n"
@@ -51,9 +55,17 @@ class Message
 
   void add(string line)
   {
-    max_length = min(max(max_length, line.length), wrapcolumn);
-    for (int i = 0; i < line.length; i += max_length)
-      lines ~= line[i..min(i + wrapcolumn, line.length)];
+    ulong line_length = displayWidth(line, AmbiguousCharWidth.wide);
+    max_length = min(max(max_length, line_length), wrapcolumn);
+    string t_line = "";
+    foreach(s; array(line)) {
+      if (displayWidth(t_line ~ to!string(s), AmbiguousCharWidth.wide) > max_length){
+        lines ~= t_line;
+        t_line = "";
+      }
+      t_line ~= s;
+    }
+    lines ~= t_line;
   }
 
   void print()
@@ -62,7 +74,8 @@ class Message
     foreach(int n, string o; lines){
       int b = ((lines.length > 1) ?  6 : 0) + (n > 0) + (n == lines.length - 1);
       write(baloons[b]);
-      write(leftJustify(o, max_length));
+      write(o);
+      write(" ".repeat(to!size_t(max_length - displayWidth(o, AmbiguousCharWidth.wide))).joiner);
       write(baloons[b + 3]);
     }
     write_line('-');

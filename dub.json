@@ -6,6 +6,9 @@
   "description": "May D-man bless you.",
   "copyright": "Copyright © 2016, @simd_nyan",
   "license": "MIT",
+  "dependencies": {
+    "east_asian_width": "~>1.0.0"
+  },
   "configurations": [
     {
       "name": "say",
